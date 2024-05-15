@@ -21,7 +21,6 @@ class YamlStepsToRst:
                 for k, v in doc.items():
                     if k == 'replacement':
                         replacement_dict = v
-                        print(replacement_dict)
                     if k == 'inherit' or k == 'source':
                         filepath = v['file']
                         with open(filepath, 'r') as inherit_yaml:
@@ -29,9 +28,6 @@ class YamlStepsToRst:
                             for i in inherit_data:
                                 if i['ref'] == v['ref']:
                                     inherit_dict = i
-                                    print('*************************************')
-                                    print(inherit_dict)
-                                    print('-------------------------------------')
                     
                 if inherit_dict:
                     keys = ['title', 'content']
@@ -58,13 +54,21 @@ class YamlStepsToRst:
                 self.write_output()
 
     def _format_line(self):
+        if '.. step' in self.current_line:
+            self.current_line = f'   {self.current_line}'
+        elif '.. procedure::' in self.current_line:
+            pass
+        elif ':style:' in self.current_line:
+            pass        
+        else:
+            self.current_line = f'      {self.current_line}'
         return(self.current_line)
 
     def write_output(self):
         with open(self.output_file, 'a') as f:
             for k,v in self.current_doc.items():
                 if k == 'title':
-                    f.write(v+'\n\n')
+                    f.write(v+'\n')
             for k,v in self.current_doc.items():
                 if k == 'content':
                     f.write(v+'\n')
@@ -90,8 +94,6 @@ def parse_args():
     p.add_argument('input_file')
     return p.parse_args()
     
-    return None
-
 def main():
     args = parse_args()
     parser = YamlStepsToRst(args)
