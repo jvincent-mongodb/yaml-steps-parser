@@ -21,15 +21,19 @@ class YamlStepsToRst:
                 for k, v in doc.items():
                     if k == 'replacement':
                         replacement_dict = v
-                    if k == 'inherit':
+                        print(replacement_dict)
+                    if k == 'inherit' or k == 'source':
                         filepath = v['file']
                         with open(filepath, 'r') as inherit_yaml:
                             inherit_data = yaml.safe_load_all(inherit_yaml)
                             for i in inherit_data:
                                 if i['ref'] == v['ref']:
                                     inherit_dict = i
+                                    print('*************************************')
+                                    print(inherit_dict)
+                                    print('-------------------------------------')
                     
-                if inherit_dict and replacement_dict:
+                if inherit_dict:
                     keys = ['title', 'content']
                     for i in keys:
                         try:
@@ -66,7 +70,7 @@ class YamlStepsToRst:
                     f.write(v+'\n')
 
     def add_output_boilerplate(self):
-        with open(self.output_file, 'a+') as f:
+        with open(self.output_file, 'a') as f:
             f.write('.. procedure::\n')
             f.write('   :style: normal\n\n')
 
