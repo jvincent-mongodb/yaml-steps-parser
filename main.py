@@ -12,49 +12,52 @@ class YamlStepsToRst:
         self.current_doc = None
 
     def parse_input(self):
-        with open(self.input_file) as f:
-            data = yaml.safe_load_all(f)
+        try:
+            with open(self.input_file) as f:
+                data = yaml.safe_load_all(f)
 
-            for doc in data:
-                inherit_dict = None
-                replacement_dict = None
-                for k, v in doc.items():
-                    if k == 'replacement':
-                        replacement_dict = v
-                    if k == 'inherit' or k == 'source':
-                        filepath = v['file']
-                        with open(filepath, 'r') as inherit_yaml:
-                            inherit_data = yaml.safe_load_all(inherit_yaml)
+                for doc in data:
+                    inherit_dict = None
+                    replacement_dict = None
+                    for k, v in doc.items():
+                        if k == 'replacement':
+                            replacement_dict = v
+                        if k == 'inherit' or k == 'source':
+                            filepath = v['file']
+                            with open(filepath, 'r') as inherit_yaml:
+                                inherit_data = yaml.safe_load_all(inherit_yaml)
+                                try:
+                                    for i in inherit_data:
+                                        if i['ref'] == v['ref']:
+                                            inherit_dict = i
+                                except KeyError:
+                                    pass
+                        
+                    if inherit_dict:
+                        keys = ['title', 'content']
+                        for i in keys:
                             try:
-                                for i in inherit_data:
-                                    if i['ref'] == v['ref']:
-                                        inherit_dict = i
-                            except KeyError:
-                                pass
-                    
-                if inherit_dict:
-                    keys = ['title', 'content']
-                    for i in keys:
-                        try:
-                            replace_targets = re.findall("{{.*}}", inherit_dict[i])
+                                replace_targets = re.findall("{{.*}}", inherit_dict[i])
 
-                            for target in replace_targets:
-                                target_key = target.replace('{{', '').replace('}}', '')
-                                replaced_content = inherit_dict[i].replace(target, replacement_dict[target_key])
-                                inherit_dict[i] = replaced_content
+                                for target in replace_targets:
+                                    target_key = target.replace('{{', '').replace('}}', '')
+                                    replaced_content = inherit_dict[i].replace(target, replacement_dict[target_key])
+                                    inherit_dict[i] = replaced_content
+                            except:
+                                pass
+
+                        try:
+                            doc['title'] = f'.. step:: {inherit_dict["title"]}'
+                            doc['content'] = inherit_dict['content']
                         except:
                             pass
-
-                    try:
-                        doc['title'] = f'.. step:: {inherit_dict["title"]}'
-                        doc['content'] = inherit_dict['content']
-                    except:
-                        pass
-                for k, v in doc.items():
-                    if k == 'title' and '.. step::' not in v:
-                        doc[k] = f'.. step:: {v}'
-                self.current_doc = doc
-                self.write_output()
+                    for k, v in doc.items():
+                        if k == 'title' and '.. step::' not in v:
+                            doc[k] = f'.. step:: {v}'
+                    self.current_doc = doc
+                    self.write_output()
+        except:
+            self.remove_output_rst()
 
     def _format_line(self):
         if '.. step' in self.current_line:
