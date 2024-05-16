@@ -43,13 +43,13 @@ class YamlStepsToRst:
                             pass
 
                     try:
-                        doc['title'] = f'.. step: {inherit_dict["title"]}'
+                        doc['title'] = f'.. step:: {inherit_dict["title"]}'
                         doc['content'] = inherit_dict['content']
                     except:
                         pass
                 for k, v in doc.items():
-                    if k == 'title' and '.. step' not in v:
-                        doc[k] = f'.. step {v}'
+                    if k == 'title' and '.. step::' not in v:
+                        doc[k] = f'.. step:: {v}'
                 self.current_doc = doc
                 self.write_output()
 
