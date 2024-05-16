@@ -25,9 +25,12 @@ class YamlStepsToRst:
                         filepath = v['file']
                         with open(filepath, 'r') as inherit_yaml:
                             inherit_data = yaml.safe_load_all(inherit_yaml)
-                            for i in inherit_data:
-                                if i['ref'] == v['ref']:
-                                    inherit_dict = i
+                            try:
+                                for i in inherit_data:
+                                    if i['ref'] == v['ref']:
+                                        inherit_dict = i
+                            except KeyError:
+                                pass
                     
                 if inherit_dict:
                     keys = ['title', 'content']
