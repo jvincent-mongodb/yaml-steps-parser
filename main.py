@@ -10,6 +10,7 @@ class YamlStepsToRst:
         self.output_file = 'output.rst'
         self.formatted_output = os.path.splitext(self.input_file)[0]+'.rst'
         self.current_doc = None
+        self.previous_step_includes_content_block = False
 
     def parse_input(self):
         try:
@@ -54,6 +55,8 @@ class YamlStepsToRst:
                     for k, v in doc.items():
                         if k == 'title' and '.. step::' not in v:
                             doc[k] = f'.. step:: {v}'
+                            if self.previous_step_includes_content_block == False:
+                                doc[k] = f'\n{doc[k]}'
                     self.current_doc = doc
                     self.write_output()
         except:
@@ -78,6 +81,9 @@ class YamlStepsToRst:
             for k,v in self.current_doc.items():
                 if k == 'content':
                     f.write(v+'\n')
+                    self.previous_step_includes_content_block = True
+                else:
+                    self.previous_step_includes_content_block = False
 
     def add_output_boilerplate(self):
         with open(self.output_file, 'a') as f:
