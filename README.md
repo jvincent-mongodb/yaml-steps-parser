@@ -1,5 +1,5 @@
 # yaml-steps-parser
-Convert YAML steps files to .rst files. 
+Convert YAML steps files to ReStructured Text files. 
 
 ## Usage
 
