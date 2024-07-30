@@ -38,7 +38,7 @@ class YamlStepsToRst:
                         keys = ['title', 'content']
                         for i in keys:
                             try:
-                                replace_targets = re.findall("{{.*}}", inherit_dict[i])
+                                replace_targets = re.findall("{{.*?}}", inherit_dict[i])
 
                                 for target in replace_targets:
                                     target_key = target.replace('{{', '').replace('}}', '')
