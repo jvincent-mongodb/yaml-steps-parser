@@ -11,4 +11,4 @@ Then run the following to generate a ReStructured Text `procedure` file that is 
 python3 yaml_steps_to_rst.py <YAML steps filename>
 ```
 
-The newly generated ReStructured Text file name will be the same as the YAML `steps` file, but it will have a `.rst` file extension. 
+The newly generated ReStructured Text file name will have the same as the YAML `steps` file, but it will have a `.rst` file extension. 
